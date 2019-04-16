@@ -15,6 +15,9 @@ public class HomeController {
 
     @RequestMapping("/index")
     public String helloworld() {
-        return "index";
+        return "home";
     }
+
+    @RequestMapping("/test")
+    public String testCSS(){ return "test"; }
 }

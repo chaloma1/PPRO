@@ -33,7 +33,7 @@ public class Employee {
     @OneToMany(mappedBy = "employee")
     private List<Attendance> attendances;
 
-    @OneToMany(mappedBy = "employee")
+    @OneToMany(mappedBy = "requested_employee")
     private List<Request> requests;
 
     public Employee(String first_name, String last_name, String tel_number, String email, String position, String heslo, int access_level) {

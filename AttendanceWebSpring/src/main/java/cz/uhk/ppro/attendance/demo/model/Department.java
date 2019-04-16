@@ -29,6 +29,22 @@ public class Department {
         this.supervisor = supervisor;
     }
 
+    public List<Notification> getSupervisor_notifications() {
+        return supervisor_notifications;
+    }
+
+    public void setSupervisor_notifications(List<Notification> supervisor_notifications) {
+        this.supervisor_notifications = supervisor_notifications;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
+    }
+
     public List<Employee> getEmployees() {
         return employees;
     }

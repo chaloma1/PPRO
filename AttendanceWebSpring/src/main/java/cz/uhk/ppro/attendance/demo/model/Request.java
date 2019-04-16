@@ -1,6 +1,7 @@
 package cz.uhk.ppro.attendance.demo.model;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class Request {
@@ -10,14 +11,58 @@ public class Request {
 
     @ManyToOne
     @JoinColumn(name = "id_employee", referencedColumnName = "id_employee")
-    private Employee employee;
+    private Employee requested_employee;
+
+    private String request_maker_name;
     private String header;
     private String text;
 
-    public Request(Employee employee, String header, String text) {
-        this.employee = employee;
+    private Date date_of_creation;
+
+    private Boolean completed;
+
+    public Request(/*Employee employee,*/ String request_maker_name, String header, String text) {
+        //this.requested_employee = employee;
+        this.request_maker_name = request_maker_name;
         this.header = header;
         this.text = text;
+        completed = false;
+        date_of_creation = new Date(System.currentTimeMillis());
+
+        /* add Date of creation and completed*/
+
+    }
+
+    public Date getDate_of_creation() {
+        return date_of_creation;
+    }
+
+    public void setDate_of_creation(Date date_of_creation) {
+        this.date_of_creation = date_of_creation;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
+
+    public Employee getRequested_employee() {
+        return requested_employee;
+    }
+
+    public void setRequested_employee(Employee requested_employee) {
+        this.requested_employee = requested_employee;
+    }
+
+    public String getRequest_maker_name() {
+        return request_maker_name;
+    }
+
+    public void setRequest_maker_name(String request_maker_name) {
+        this.request_maker_name = request_maker_name;
     }
 
     public int getId_request() {
@@ -28,13 +73,6 @@ public class Request {
         this.id_request = id_request;
     }
 
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
 
     public String getHeader() {
         return header;
