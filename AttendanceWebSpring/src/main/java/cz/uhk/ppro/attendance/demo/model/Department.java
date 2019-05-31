@@ -9,24 +9,38 @@ public class Department {
     @GeneratedValue
     private int id_department;
 
-
+    @Column
     private String title;
 
-    @OneToOne
+   /* @OneToOne
     private Employee supervisor;
+    */
+    @Column
+    private String supervisor;
+
+    public void setSupervisor(String supervisor) {
+        this.supervisor = supervisor;
+    }
+
+    public String getSupervisor() {
+        return supervisor;
+    }
 
     @OneToMany(mappedBy = "department")
     private List<Employee> employees;
 
-    @OneToMany(mappedBy = "supervisor")
+    @OneToMany(mappedBy = "supervisor_notification")
     private List<Notification> supervisor_notifications;
 
     @OneToMany(mappedBy = "department")
     private List<Notification> notifications;
 
-    public Department(String title, Employee supervisor) {
+    public Department(){}
+
+    public Department(String title) {
         this.title = title;
-        this.supervisor = supervisor;
+        supervisor = null;
+
     }
 
     public List<Notification> getSupervisor_notifications() {
@@ -69,11 +83,11 @@ public class Department {
         this.title = title;
     }
 
-    public Employee getSupervisor() {
+   /* public Employee getSupervisor() {
         return supervisor;
     }
 
     public void setSupervisor(Employee supervisor) {
         this.supervisor = supervisor;
-    }
+    }*/
 }

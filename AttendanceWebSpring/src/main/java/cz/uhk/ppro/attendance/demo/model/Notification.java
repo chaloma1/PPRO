@@ -10,7 +10,7 @@ public class Notification {
 
     @ManyToOne
     @JoinColumn(name = "id_department", referencedColumnName = "id_department")
-    private Department supervisor;
+    private Department supervisor_notification;
 
     @ManyToOne
     @JoinColumn(name = "id_deparmtnet",referencedColumnName = "id_department")
@@ -20,7 +20,7 @@ public class Notification {
     private String header;
 
     public Notification(Department supervisor, Department department, String text, String header) {
-        this.supervisor = supervisor;
+        this.supervisor_notification = supervisor;
         this.department = department;
         this.text = text;
         this.header = header;
@@ -35,11 +35,11 @@ public class Notification {
     }
 
     public Department getSupervisor() {
-        return supervisor;
+        return supervisor_notification;
     }
 
     public void setSupervisor(Department supervisor) {
-        this.supervisor = supervisor;
+        this.supervisor_notification = supervisor;
     }
 
     public Department getDepartment() {

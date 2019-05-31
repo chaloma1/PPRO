@@ -57,6 +57,12 @@ public class EmployeeDao implements EmployeeDB {
     }
 
     @Override
+    public Employee findEmployeeByLogin(String login) {
+        return (Employee) em.createQuery(
+                "Select e from Employee e where e.login_Name = :login").setParameter("login", login).getSingleResult();
+    }
+
+    @Override
     public Employee findEmployeeByName(String firstName, String lastName) {
         return (Employee) em.createQuery(
                 "Select e from Employee e where e.first_name = :firstName and e.last_name = :lastName")

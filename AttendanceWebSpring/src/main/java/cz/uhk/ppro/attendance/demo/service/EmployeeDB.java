@@ -20,6 +20,8 @@ public interface EmployeeDB {
 
     Employee findEmployeeByEmail(String email);
 
+    Employee findEmployeeByLogin(String login);
+
     Employee findEmployeeByName(String firstName, String lastName);
 
     boolean removeEmployeeById(int employee_id);
