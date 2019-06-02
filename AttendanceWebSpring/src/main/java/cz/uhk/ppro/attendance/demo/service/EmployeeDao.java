@@ -53,20 +53,26 @@ public class EmployeeDao implements EmployeeDB {
     @Override
     public Employee findEmployeeByEmail(String email) {
         return (Employee) em.createQuery(
-                "Select e from Employee e where e.email = :email").setParameter("email", email).getSingleResult();
+                "Select e from Employee e where e.email LIKE CONCAT('%',:email,'%')").setParameter("email", email).getSingleResult();
     }
 
     @Override
     public Employee findEmployeeByLogin(String login) {
         return (Employee) em.createQuery(
-                "Select e from Employee e where e.login_Name = :login").setParameter("login", login).getSingleResult();
+                "Select e from Employee e where e.login_name LIKE CONCAT('%',:login,'%')").setParameter("login", login).getSingleResult();
     }
 
     @Override
     public Employee findEmployeeByName(String firstName, String lastName) {
         return (Employee) em.createQuery(
-                "Select e from Employee e where e.first_name = :firstName and e.last_name = :lastName")
+                "Select e from Employee e where e.first_name LIKE CONCAT('%',:firstName,'%') and e.last_name LIKE CONCAT('%',:lastName,'%')")
                 .setParameter("firstName", firstName).setParameter("lastName", lastName).getSingleResult();
+    }
+
+    @Override
+    public List<Employee> findAllEmployee() {
+        List<Employee> employees = em.createQuery("Select e from Employee e").getResultList();
+        return employees;
     }
 
     @Override
@@ -116,7 +122,18 @@ public class EmployeeDao implements EmployeeDB {
     @Override
     public List<Request> viewRequestCreatedByMe(String request_maker_name) {
         return em.createQuery(
-                "Select r from Request r where r.request_maker_name = :request_maker_name")
+                "Select r from Request r where r.request_maker_name LIKE CONCAT('%',:request_maker_name,'%')")
                 .setParameter("request_maker_name", request_maker_name).getResultList();
+    }
+
+    @Override
+    public boolean isDepartmentSupervisor(int employee_id) {
+        Employee e = findEmployeeById(employee_id);
+        int supervisor = em.createQuery("SELECT COUNT(d) FROM Department d WHERE d.supervisor LIKE CONCAT('%',:login,'%') ").setParameter("login",e.getLogin_name()).getFirstResult();
+
+        if(supervisor == 0) {
+            return false;
+        }
+        return true;
     }
 }

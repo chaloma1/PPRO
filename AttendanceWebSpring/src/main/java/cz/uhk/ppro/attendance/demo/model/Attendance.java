@@ -1,6 +1,7 @@
 package cz.uhk.ppro.attendance.demo.model;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
@@ -15,11 +16,15 @@ public class Attendance {
     private Date attend_time;
     private Date leave_time;
 
+
+
     public Attendance(Employee employee, Date attend_time, Date leave_time) {
         this.employee = employee;
         this.attend_time = attend_time;
         this.leave_time = leave_time;
     }
+
+    public Attendance(){}
 
     public int getId_attendance() {
         return id_attendance;
@@ -51,5 +56,12 @@ public class Attendance {
 
     public void setLeave_time(Date leave_time) {
         this.leave_time = leave_time;
+    }
+
+    public int compare_dates(Date prichod, Date odchod)
+    {
+        int milli_to_hour = 1000 * 60* 60;
+        return (int) (odchod.getTime() - prichod.getTime()) / milli_to_hour;
+
     }
 }

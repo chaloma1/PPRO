@@ -24,6 +24,8 @@ public interface EmployeeDB {
 
     Employee findEmployeeByName(String firstName, String lastName);
 
+    List<Employee> findAllEmployee();
+
     boolean removeEmployeeById(int employee_id);
 
     boolean removeEmployeeByEmail(String email);
@@ -39,4 +41,6 @@ public interface EmployeeDB {
     List<Request> viewCompletedRequest(int employee_id);
 
     List<Request> viewRequestCreatedByMe(String request_maker_name);
+
+    boolean isDepartmentSupervisor(int employee_id);
 }

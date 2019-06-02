@@ -21,7 +21,7 @@ public class LoginService {
         try {
             System.out.println("try");
             employee = employeeDB.findEmployeeByLogin(login);
-            System.out.println(employee.getLoginName());
+            System.out.println(employee.getLogin_name());
             if (employee.getHeslo().equals(heslo)){
                 System.out.println("true");
                 return true;

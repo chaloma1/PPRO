@@ -31,7 +31,7 @@ public class Employee {
     private String heslo;
 
     @Column(length = 50)
-    private String login_Name;
+    private String login_name;
 
     @Column(length = 10)
     private int access_level;
@@ -42,25 +42,25 @@ public class Employee {
     @OneToMany(mappedBy = "requested_employee")
     private List<Request> requests;
 
-    public Employee(String first_name, String last_name, String tel_number, String email, String position, String heslo, String login_Name, int access_level) {
+    public Employee(String first_name, String last_name, String tel_number, String email, String position, String heslo, String login_name, int access_level) {
         this.first_name = first_name;
         this.last_name = last_name;
         this.tel_number = tel_number;
         this.email = email;
         this.position = position;
         this.heslo = heslo;
-        this.login_Name = login_Name;
+        this.login_name = login_name;
         this.access_level = access_level;
     }
 
     public Employee(){}
 
-    public String getLoginName() {
-        return login_Name;
+    public String getLogin_name() {
+        return login_name;
     }
 
-    public void setLoginName(String login_Name) {
-        this.login_Name = login_Name;
+    public void setLogin_name(String login_name) {
+        this.login_name = login_name;
     }
 
     public int getAccess_level() {

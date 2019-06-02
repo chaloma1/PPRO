@@ -22,12 +22,20 @@ public class InitDatabaseService {
 
     private DepartmentRepository departmentRepository;
 
-    public InitDatabaseService(@Autowired EmployeeDB employeeDB, @Autowired DepartmentRepository departmentRepository){
+    private AttendanceRepository attendanceRepository;
+
+    public InitDatabaseService(@Autowired EmployeeDB employeeDB,
+                               @Autowired DepartmentRepository departmentRepository,
+                               @Autowired AttendanceRepository attendanceRepository){
         this.employeeDB = employeeDB;
         this.departmentRepository = departmentRepository;
+        this.attendanceRepository = attendanceRepository;
     }
 
     public void initDB(){
+
+        attendanceRepository.deleteAll();
+
         em.createQuery("DELETE FROM Employee").executeUpdate();
         departmentRepository.deleteAll();
 
