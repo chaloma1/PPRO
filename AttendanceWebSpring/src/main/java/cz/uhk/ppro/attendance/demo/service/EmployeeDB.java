@@ -5,6 +5,7 @@ import cz.uhk.ppro.attendance.demo.model.Employee;
 import cz.uhk.ppro.attendance.demo.model.Notification;
 import cz.uhk.ppro.attendance.demo.model.Request;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 
@@ -43,4 +44,6 @@ public interface EmployeeDB {
     List<Request> viewRequestCreatedByMe(String request_maker_name);
 
     boolean isDepartmentSupervisor(int employee_id);
+
+    String checkAccess(HttpSession session);
 }

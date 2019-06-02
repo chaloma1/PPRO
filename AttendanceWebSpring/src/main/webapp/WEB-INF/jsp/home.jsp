@@ -13,7 +13,7 @@
     <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/offcanvas/">
 
     <!-- Bootstrap core CSS -->
-    <link href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"  crossorigin="anonymous">
+    <link href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
 
     <style>
@@ -112,9 +112,10 @@
         </small>
     </div>
 </main>
-<!--<script src="../../javascript/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script>window.jQuery || document.write('<script src="../../javascript/jquery-3.3.1.slim.min.js"><\/script>')</script><script src="../../javascript/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+<script src="../../javascript/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+<script>window.jQuery || document.write('<script src="../../javascript/jquery-3.3.1.slim.min.js"><\/script>')</script>
+<script src="../../javascript/bootstrap.bundle.min.js"></script>
 <script src="../../javascript/offcanvas.js"></script>
--->
+
 </body>
 </html>

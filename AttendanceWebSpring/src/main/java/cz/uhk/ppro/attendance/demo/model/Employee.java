@@ -29,8 +29,7 @@ public class Employee {
     private String position;
     @Column(length = 50)
     private String heslo;
-
-    @Column(length = 50)
+    @Column(length = 50, unique = false)
     private String login_name;
 
     @Column(length = 10)

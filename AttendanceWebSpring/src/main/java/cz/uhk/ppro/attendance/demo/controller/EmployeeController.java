@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,15 +40,18 @@ public class EmployeeController {
 
     @RequestMapping(value = "/addEmployee", method = RequestMethod.GET)
     public String addEmployee(HttpSession session, Model model){
-       if(checkAccess(session).equals("admin")){
+        String access = employeeDB.checkAccess(session);
+       if(access.equals("admin")){
            List<Department> departments = departmentRepository.findAll();
            model.addAttribute("departments", departments);
 
-           return "form/employeeForm";
 
-       };
 
-       return "redirect:./login";
+       }else if(access.equals("unknown")){
+           return "redirect:.login";
+       }
+
+        return "form/employeeForm";
 
     }
 
@@ -57,30 +61,47 @@ public class EmployeeController {
                                   @RequestParam String telephone, @RequestParam String heslo,
                                   @RequestParam int access_level, @RequestParam String login,
                                   @RequestParam String department,
-                                  RedirectAttributes messages){
+                                  RedirectAttributes messages, HttpSession session){
+        String access = employeeDB.checkAccess(session);
+        if(access.equals("admin")) {
+
+            try {
+                Department d = departmentRepository.findByTitle(department);
+
+                if (employeeDB.findEmployeeByLogin(login) != null){
+                    messages.addFlashAttribute("failuremessage", "Login je jiz pouzity.");
+                    return "redirect:./index";
+                }
+
+                Employee e = new Employee(fname, lname, telephone, email, position, heslo, login, access_level);
 
 
-        try {
-        Department d = departmentRepository.findByTitle(department);
 
-        Employee e = new Employee(fname,lname,telephone,email,position,heslo,login,access_level );
-        e.setDepartment(d);
-        System.out.println(
-                "fname: " + e.getFirst_name() + " "
-                + "lname " + e.getLast_name() + " " + "telephone "
-                        + e.getTel_number() + " " + "heslo " + e.getHeslo() + " " + "login " + e.getLogin_name() + " " + "access " + e.getAccess_level());
+                e.setDepartment(d);
+                System.out.println(
+                        "fname: " + e.getFirst_name() + " "
+                                + "lname " + e.getLast_name() + " " + "telephone "
+                                + e.getTel_number() + " " + "heslo " + e.getHeslo() + " " + "login " + e.getLogin_name() + " " + "access " + e.getAccess_level());
 
 
-            employeeDB.createEmployee(e);
-            messages.addFlashAttribute("successmessage", "Zamestnanec uspesne vytvoren.");
-        }catch (Exception exception)
-        {
-            messages.addFlashAttribute("failuremessage",  exception.getMessage());
+                employeeDB.createEmployee(e);
+                messages.addFlashAttribute("successmessage", "Zamestnanec uspesne vytvoren.");
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+                return "redirect:./index";
+            }
+
+        }else if (access.equals("unknown")){
+
+            return "redirect:./login";
+
         }
 
-
-
         return "redirect:./index";
+
+
+
+
 
     }
 
@@ -91,8 +112,8 @@ public class EmployeeController {
     @RequestMapping(value = "/addAttendance", method = RequestMethod.GET)
     public String addAttendance(HttpSession session, Model model)
     {
-        if (session.getAttribute("access") != null) {
-            if ((int) session.getAttribute("access") == 0) {
+        String access = employeeDB.checkAccess(session);
+            if (access.equals("admin")) {
                 employees = employeeDB.findAllEmployee();
                 model.addAttribute("employees", employees);
                 System.out.println(employees.size() + employees.get(0).getLogin_name());
@@ -100,77 +121,138 @@ public class EmployeeController {
 
 
 
-                return "form/attendanceForm";
-            } else {
+
+            } else if(access.equals("unknown")) {
                 return "redirect:./login";
             }
-        }else
-            {
-                return "redirect:./login";
-            }
+
+        return "form/attendanceForm";
+
     }
 
     @RequestMapping(value = "/sendAttendance", method = RequestMethod.POST)
     public String sendAttendance(@RequestParam String employee,
                                  @RequestParam String day,
                                  @RequestParam String attend_time,
-                                 @RequestParam String leave_time, RedirectAttributes messages){
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-        simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm");
-        try {
-            Date datum_prichodu = simpleDateFormat.parse(day + " " + attend_time);
-            Date datum_odchodu = simpleDateFormat.parse(day + " " + leave_time);
-
-
-
-
-            Employee emp = employeeDB.findEmployeeByLogin(employee);
+                                 @RequestParam String leave_time, RedirectAttributes messages, HttpSession session){
+        String access = employeeDB.checkAccess(session);
+        if (access.equals("admin")) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+            simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm");
+            try {
+                Date datum_prichodu = simpleDateFormat.parse(day + " " + attend_time);
+                Date datum_odchodu = simpleDateFormat.parse(day + " " + leave_time);
 
 
-            Attendance a = new Attendance(emp,  datum_prichodu, datum_odchodu);
+                Employee emp = employeeDB.findEmployeeByLogin(employee);
 
 
-
-            attendanceRepository.save(a);
-
+                Attendance a = new Attendance(emp, datum_prichodu, datum_odchodu);
 
 
+                attendanceRepository.save(a);
 
 
-            messages.addFlashAttribute("successmessage", "Dochazka uspesne ulozena.");
+                messages.addFlashAttribute("successmessage", "Dochazka uspesne ulozena.");
 
 
+            } catch (ParseException e) {
 
-
-        } catch (ParseException e) {
-
-            messages.addFlashAttribute("failuremessage", e.getMessage());
-        }
-
-
-
-        return "redirect:./index";
-
-    }
-
-    public String checkAccess(HttpSession session){
-        if(session.getAttribute("access") != null){
-            String access_level;
-            switch ((int)session.getAttribute("access"))
-            {
-                case 0: access_level = "admin";break;
-                case 1: access_level = "employee";break;
-                default: access_level = "redirect:./login";
+                messages.addFlashAttribute("failuremessage", e.getMessage());
             }
 
-            return access_level;
 
 
-        }else
-        {
+        } else if (access.equals("unknown")){
             return "redirect:./login";
         }
 
+        return "redirect:./index";
+
+
+
+
+
     }
+
+    @RequestMapping(value = "/addDepartment", method = RequestMethod.GET)
+    public String addDepartment(HttpSession session, Model model){
+        String access = employeeDB.checkAccess(session);
+        if (access.equals("admin")){
+
+        List<Employee> supervisors = employeeDB.findAllEmployee();
+
+        model.addAttribute("supervisors", supervisors);
+
+        }else if (access.equals("unknown")){
+            return "redirect:./login";
+        }
+        return "form/departmentForm";
+
+
+    }
+
+    @RequestMapping(value = "/sendDepartment", method = RequestMethod.POST)
+    public String sendDepartment(@RequestParam String title, @RequestParam String supervisor, HttpSession session, RedirectAttributes messages){
+        String access = employeeDB.checkAccess(session);
+        if (access.equals("admin")){
+            try {
+
+                Department d = new Department(title);
+                d.setSupervisor(supervisor.substring(supervisor.indexOf("(")+1, supervisor.indexOf(")")));
+
+                departmentRepository.save(d);
+
+                messages.addFlashAttribute("successmessage", "Oddeleni uspesne ulozeno.");
+
+
+
+
+
+            }catch (Exception e){
+
+                messages.addFlashAttribute("failuremessage", e.getMessage());
+            }
+
+        }else if (access.equals("unknown")){
+            return "redirect:./login";
+        }
+        return "redirect:./index";
+
+    }
+    @RequestMapping(value = "/alterDepartment", method = RequestMethod.GET)
+    public String alterDepartment(HttpSession session, Model model){
+        String access = employeeDB.checkAccess(session);
+        if (access.equals("admin")){
+
+            model.addAttribute("uprava", true);
+
+            List<Department> departments = departmentRepository.findAll();
+            List<Employee> supervisors = employeeDB.findAllEmployee();
+
+            model.addAttribute("departments", departments);
+            model.addAttribute("supervisors", supervisors);
+
+        }else if (access.equals("unknown")){
+            return "redirect:./login";
+        }
+
+
+        return "form/departmentForm";
+
+
+    }
+
+    @RequestMapping(value = "/sendNewDepartment", method = RequestMethod.POST)
+    public String sendNewDepartment(@RequestParam String department, @RequestParam String title, @RequestParam String supervisor){
+
+        System.out.println(department);
+        System.out.println(title);
+        System.out.println(supervisor);
+
+
+        return "redirect:./index";
+    }
+
+
 }

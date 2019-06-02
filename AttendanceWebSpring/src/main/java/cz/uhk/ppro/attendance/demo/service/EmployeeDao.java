@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
@@ -135,5 +136,26 @@ public class EmployeeDao implements EmployeeDB {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String checkAccess(HttpSession session) {
+            if(session.getAttribute("access") != null){
+                String access_level;
+                switch ((int)session.getAttribute("access"))
+                {
+                    case 0: access_level = "admin";break;
+                    case 1: access_level = "employee";break;
+                    default: access_level = "unknown";
+                }
+
+                return access_level;
+
+
+            }else
+            {
+                return "unknown";
+            }
+
     }
 }

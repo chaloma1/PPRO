@@ -45,7 +45,7 @@
 
 <div class="container">
     <div class="py-5 text-center">
-        <h2>Attendance form</h2>
+        <h2>Department form</h2>
         <p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
     </div>
 
@@ -54,47 +54,58 @@
     <div class="row">
 
         <div class="col-md-8 order-md-1">
-            <h4 class="mb-3">Pridani docházky</h4>
-            <form class="needs-validation" method="POST" action="/sendAttendance">
+            <h4 class="mb-3">Pridani oddeleni</h4>
+
+        <c:choose>
+            <c:when test="${uprava != null && uprava == true}">
+            <form class="needs-validation" method="POST" action="/sendNewDepartment">
+
+                <div class="col-md-5 mb-3">
+                    <label for="department">Upravovane oddeleni</label>
+                    <select class="custom-select d-block w-100" name="department" id="department">
+                        <option value="">Choose...</option>
+                        <c:forEach var="d" items="${departments}">
+                            <option>${d.title} - ${d.supervisor}</option>
+                        </c:forEach>
+                    </select>
+                    <div class="invalid-feedback">
+                        Please select a valid department.
+                    </div>
+                </div>
+
+            </c:when>
+        </c:choose>
+            <c:choose>
+                <c:when test="${uprava == null || uprava == false}">
+            <form class="needs-validation" method="POST" action="/sendDepartment">
+
+                </c:when>
+                    </c:choose>
+
+
                 <div class="row">
-                    <div class="col-md-5 mb-3">
-                        <label for="employee">Zamestnanci</label>
-                        <select class="custom-select d-block w-100" name="employee" id="employee" required>
-                            <option value="">Choose...</option>
-                            <c:forEach var="e" items="${employees}">
-                                <option>${e.login_name}</option>
-                            </c:forEach>
-                        </select>
+                    <div class="col-md-6 mb-3">
+                        <label for="title">Department title</label>
+                        <input type="text" name="title" class="form-control" id="title" placeholder="" value="">
                         <div class="invalid-feedback">
-                            Please select a valid employee.
+                            Valid department title required.
                         </div>
                     </div>
 
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="day">Datum</label>
-                        <input type="date" name="day" class="form-control" id="day" placeholder="" value="" required>
+
+                    <div class="col-md-5 mb-3">
+                        <label for="supervisor">Supervisor login</label>
+                        <select class="custom-select d-block w-100" name="supervisor" id="supervisor">
+                            <option value="">Choose...</option>
+                            <c:forEach var="s" items="${supervisors}">
+                                <option>${s.first_name} ${s.last_name} (${s.login_name})</option>
+                            </c:forEach>
+                        </select>
                         <div class="invalid-feedback">
-                            Valid date required.
+                            Please select a valid supervisor.
                         </div>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="attend_time">Prichod</label>
-                        <input type="time" name="attend_time" class="form-control" id="attend_time" placeholder=""
-                               value="" min="00:00" max="23:59" onchange="document.getElementById('leave_time').min=this.value;"
-                               required>
-                        <div class="invalid-feedback">
-                            Valid attend_time required.
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="leave_time">Odchod</label>
-                        <input type="time" name="leave_time" class="form-control" id="leave_time" placeholder="" min="document.getElementById('attend_time').value"  required>
-                        <div class="invalid-feedback">
-                            Valid leave_time required.
-                        </div>
-                    </div>
+
                 </div>
 
 
