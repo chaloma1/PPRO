@@ -59,7 +59,7 @@ public class HomeController {
 
         if(session.getAttribute("access") == null)
         {
-            return "redirect:/login";
+            return "redirect:./login";
 
         }else {
             Employee employee = employeeDB.findEmployeeByLogin(session.getAttribute("login").toString());
@@ -71,6 +71,21 @@ public class HomeController {
             System.out.println("pocet dochazek " + attendances.size());
 
             model.addAttribute("attendances", attendances);
+
+            List<Employee> employees = employeeDB.findAllEmployee();
+            System.out.println("employees size" + employees.size());
+
+            if (employeeDB.isDepartmentSupervisor(employee.getId_employee()) == true){
+                List<Employee> members = employeeDB.findMembersFromDepartment(employee.getId_employee(), employee.getDepartment().getId_department());
+                model.addAttribute("members", members);
+
+                System.out.println("memberu je:" + "" + members.size());
+
+            }else {
+                System.out.println("neni supervisor");
+            }
+
+
 
 
             return "./home";

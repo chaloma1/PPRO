@@ -37,13 +37,13 @@ public class LoginController {
 
             Employee e = empDB.findEmployeeByLogin(login_Name);
             session.setAttribute("login", login_Name);
-            session.setAttribute("access", 0);
+            session.setAttribute("access", e.getAccess_level());
             redirectAttributes.addFlashAttribute("messagenew", "SUPR LOGIN");
-            //redirectAttributes.addFlashAttribute("message", "message je tu");
-            return "redirect:/index";
+
+            return "redirect:./index";
         }else {
             System.out.println("Nepovedlo se");
-            return "redirect:/login";
+            return "redirect:./login";
         }
 
 

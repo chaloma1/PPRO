@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 
 @Controller
 public class EmployeeController {
@@ -48,7 +50,7 @@ public class EmployeeController {
 
 
        }else if(access.equals("unknown")){
-           return "redirect:.login";
+           return "redirect:./login";
        }
 
         return "form/employeeForm";
@@ -65,17 +67,22 @@ public class EmployeeController {
         String access = employeeDB.checkAccess(session);
         if(access.equals("admin")) {
 
+            if (employeeDB.checkEmployeeLogin(login) == false){
+                messages.addFlashAttribute("failuremessage", "Login je jiz pouzity.");
+                return "redirect:./index";
+            }
+
+
             try {
+
                 Department d = departmentRepository.findByTitle(department);
 
-                if (employeeDB.findEmployeeByLogin(login) != null){
-                    messages.addFlashAttribute("failuremessage", "Login je jiz pouzity.");
-                    return "redirect:./index";
-                }
+                departmentRepository.save(d);
+                System.out.println("Dobre 1");
 
                 Employee e = new Employee(fname, lname, telephone, email, position, heslo, login, access_level);
 
-
+                System.out.println("model employee");
 
                 e.setDepartment(d);
                 System.out.println(
@@ -83,11 +90,12 @@ public class EmployeeController {
                                 + "lname " + e.getLast_name() + " " + "telephone "
                                 + e.getTel_number() + " " + "heslo " + e.getHeslo() + " " + "login " + e.getLogin_name() + " " + "access " + e.getAccess_level());
 
-
+                System.out.println("create?");
                 employeeDB.createEmployee(e);
                 messages.addFlashAttribute("successmessage", "Zamestnanec uspesne vytvoren.");
             } catch (Exception exception) {
                 System.out.println(exception.getMessage());
+                messages.addFlashAttribute("failuremessage", "Zamestnanec neulozen.");
                 return "redirect:./index";
             }
 
@@ -197,9 +205,23 @@ public class EmployeeController {
         String access = employeeDB.checkAccess(session);
         if (access.equals("admin")){
             try {
+                String sv = null;
+                if (supervisor != null && supervisor.isEmpty() == false) {
+                    sv = supervisor.substring(supervisor.indexOf("(") + 1, supervisor.indexOf(")"));
+                }
 
-                Department d = new Department(title);
-                d.setSupervisor(supervisor.substring(supervisor.indexOf("(")+1, supervisor.indexOf(")")));
+                if (sv != null && employeeDB.isDepartmentSupervisor(sv) == true){
+                    messages.addFlashAttribute("failuremessage", "Tento zamestnanec jiz je supervisorem v nejakem oddeleni.");
+                    return "redirect:./index";
+                }
+
+                if (title.isEmpty() == true || title == null){
+                    messages.addFlashAttribute("failuremessage", "Kolonka oddeleni by nemelo byt prazdne.");
+                    return "redirect:./index";
+                }
+
+                Department d = new Department(title.trim(), sv);
+                //d.setSupervisor(supervisor.substring(supervisor.indexOf("(")+1, supervisor.indexOf(")")));
 
                 departmentRepository.save(d);
 
@@ -211,7 +233,7 @@ public class EmployeeController {
 
             }catch (Exception e){
 
-                messages.addFlashAttribute("failuremessage", e.getMessage());
+                messages.addFlashAttribute("failuremessage", "stala se chyba" + "" +  e.getMessage());
             }
 
         }else if (access.equals("unknown")){
@@ -244,11 +266,80 @@ public class EmployeeController {
     }
 
     @RequestMapping(value = "/sendNewDepartment", method = RequestMethod.POST)
-    public String sendNewDepartment(@RequestParam String department, @RequestParam String title, @RequestParam String supervisor){
+    public String sendNewDepartment(@RequestParam String department, String title, String supervisor,
+                                    HttpSession session, RedirectAttributes messages){
 
-        System.out.println(department);
-        System.out.println(title);
-        System.out.println(supervisor);
+        String access = employeeDB.checkAccess(session);
+        if (access.equals("admin")){
+
+            String oldTitle = null;
+            String oldSupervisor = null;
+
+            String newSupervisor = null;
+
+            try {
+
+               oldTitle = department.substring(department.indexOf(""), department.indexOf(" Vedouci:"));
+
+               oldSupervisor = department.substring(department.indexOf("(")+1, department.indexOf(")") );
+
+               newSupervisor = supervisor.substring(supervisor.indexOf("(")+1, supervisor.indexOf(")"));
+
+               if (employeeDB.isDepartmentSupervisor(newSupervisor) == true){
+                   messages.addFlashAttribute("failuremessage", "Tento zamestnanec jiz je supervisorem v nejakem oddeleni.");
+                   return "redirect:./index";
+               }
+
+            }catch (Exception e){
+                System.out.println("Nepodarilo se rozparsovat string pro upravu oddeleni.");
+            }
+
+            try {
+
+                Department d = departmentRepository.findByTitle(oldTitle);
+
+
+                if (title != null && title.isEmpty() == false && !" ".equals(title)){
+                    d.setTitle(title.trim());
+                }else {
+                    d.setTitle(oldTitle);
+                }
+
+                System.out.println("new supervisor:" +  newSupervisor);
+
+                if (newSupervisor != null && newSupervisor.isEmpty() == false && !" ".equals(newSupervisor) ){
+                    System.out.println("new supervisor:" + "" + newSupervisor);
+                    Employee e = employeeDB.findEmployeeByLogin(newSupervisor);
+                    System.out.println("e login " + "" + e.getLogin_name());
+                    d.setSupervisor(e.getLogin_name());
+                }else {
+                    System.out.println("Spatny novy supervisor - prida se stary.");
+                    d.setSupervisor(oldSupervisor);
+                }
+
+                System.out.println("finalni supervisor" + d.getSupervisor());
+
+                departmentRepository.alterDepartment(d.getId_department(), d.getTitle(), d.getSupervisor());
+
+                messages.addFlashAttribute("successmessage", "ID oddeleni" + "" + d.getId_department() + "" + "uspesne upraveno.");
+
+            }catch (Exception e){
+                System.out.println("Nepodarilo se upravit oddeleni.");
+
+                messages.addFlashAttribute("failuremessage", "Oddeleni se neulozilo." + e.getMessage());
+
+            }
+
+
+
+
+
+
+        }else if (access.equals("unknown")){
+            return "redirect:./login";
+        }
+
+
 
 
         return "redirect:./index";

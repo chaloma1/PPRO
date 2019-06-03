@@ -9,13 +9,13 @@ public class Department {
     @GeneratedValue
     private int id_department;
 
-    @Column
+    @Column(length = 50)
     private String title;
 
    /* @OneToOne
     private Employee supervisor;
     */
-    @Column
+    @Column(length = 50)
     private String supervisor;
 
     public void setSupervisor(String supervisor) {
@@ -37,9 +37,9 @@ public class Department {
 
     public Department(){}
 
-    public Department(String title) {
+    public Department(String title, String supervisor) {
         this.title = title;
-        supervisor = null;
+        this.supervisor = supervisor;
 
     }
 

@@ -1,9 +1,6 @@
 package cz.uhk.ppro.attendance.demo.service;
 
-import cz.uhk.ppro.attendance.demo.model.Attendance;
-import cz.uhk.ppro.attendance.demo.model.Employee;
-import cz.uhk.ppro.attendance.demo.model.Notification;
-import cz.uhk.ppro.attendance.demo.model.Request;
+import cz.uhk.ppro.attendance.demo.model.*;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -15,7 +12,8 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class EmployeeDao implements EmployeeDB {
+public class EmployeeDao implements EmployeeDB
+{
 
     @PersistenceContext
     private EntityManager em;
@@ -60,7 +58,20 @@ public class EmployeeDao implements EmployeeDB {
     @Override
     public Employee findEmployeeByLogin(String login) {
         return (Employee) em.createQuery(
-                "Select e from Employee e where e.login_name LIKE CONCAT('%',:login,'%')").setParameter("login", login).getSingleResult();
+                "Select e from Employee e where e.login_name LIKE :login").setParameter("login", login).getSingleResult();
+    }
+
+    @Override
+    public Boolean checkEmployeeLogin(String login) {
+        List<Employee> employeeList = findAllEmployee();
+        for (Employee e:employeeList
+             ) {
+            if (e.getLogin_name().equals(login)){
+                return false;
+            }
+
+        }
+        return true;
     }
 
     @Override
@@ -130,12 +141,35 @@ public class EmployeeDao implements EmployeeDB {
     @Override
     public boolean isDepartmentSupervisor(int employee_id) {
         Employee e = findEmployeeById(employee_id);
-        int supervisor = em.createQuery("SELECT COUNT(d) FROM Department d WHERE d.supervisor LIKE CONCAT('%',:login,'%') ").setParameter("login",e.getLogin_name()).getFirstResult();
+        Department department = (Department) em.createQuery("SELECT d FROM Department d WHERE d.supervisor LIKE CONCAT('%',:login,'%') ").setParameter("login",e.getLogin_name()).getSingleResult();
 
-        if(supervisor == 0) {
+        System.out.println("SUPERVISOR KONTROLA" + "" + department.getTitle());
+        if(department == null) {
             return false;
+        }else {
+            return true;
         }
-        return true;
+    }
+
+    @Override
+    public boolean isDepartmentSupervisor(String supervisor) {
+        Employee e = findEmployeeByLogin(supervisor);
+        Department department = (Department) em.createQuery("SELECT d FROM Department d WHERE d.supervisor LIKE CONCAT('%',:login,'%') ").setParameter("login",e.getLogin_name()).getSingleResult();
+
+        System.out.println("SUPERVISOR KONTROLA" + "" + department.getTitle());
+        if(department == null) {
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    @Override
+    public List<Employee> findMembersFromDepartment(int employee_id, int department_id) {
+        return em.createQuery(
+                "SELECT e.first_name, e.last_name, e.access_level, e.login_name " +
+                        "FROM Employee e WHERE e.department.id_department = :department_id AND id_employee != :employee_id")
+                .setParameter("department_id", department_id).setParameter("employee_id", employee_id).getResultList();
     }
 
     @Override

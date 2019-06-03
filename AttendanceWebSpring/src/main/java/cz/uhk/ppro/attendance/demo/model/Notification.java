@@ -26,6 +26,8 @@ public class Notification {
         this.header = header;
     }
 
+    public Notification(){}
+
     public int getId_notification() {
         return id_notification;
     }

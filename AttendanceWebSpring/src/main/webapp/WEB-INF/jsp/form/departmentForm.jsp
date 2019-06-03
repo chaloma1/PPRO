@@ -43,7 +43,7 @@
 
 <jsp:include page=".././static/header.jsp"/>
 
-<div class="container">
+<div class="container" style="margin-top: 5%">
     <div class="py-5 text-center">
         <h2>Department form</h2>
         <p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
@@ -60,12 +60,12 @@
             <c:when test="${uprava != null && uprava == true}">
             <form class="needs-validation" method="POST" action="/sendNewDepartment">
 
-                <div class="col-md-5 mb-3">
+                <div >
                     <label for="department">Upravovane oddeleni</label>
                     <select class="custom-select d-block w-100" name="department" id="department">
                         <option value="">Choose...</option>
                         <c:forEach var="d" items="${departments}">
-                            <option>${d.title} - ${d.supervisor}</option>
+                            <option>${d.title} Vedouci: (${d.supervisor})</option>
                         </c:forEach>
                     </select>
                     <div class="invalid-feedback">
@@ -75,6 +75,7 @@
 
             </c:when>
         </c:choose>
+
             <c:choose>
                 <c:when test="${uprava == null || uprava == false}">
             <form class="needs-validation" method="POST" action="/sendDepartment">

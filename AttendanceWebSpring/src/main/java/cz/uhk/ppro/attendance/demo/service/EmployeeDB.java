@@ -23,6 +23,8 @@ public interface EmployeeDB {
 
     Employee findEmployeeByLogin(String login);
 
+    Boolean checkEmployeeLogin(String login);
+
     Employee findEmployeeByName(String firstName, String lastName);
 
     List<Employee> findAllEmployee();
@@ -44,6 +46,10 @@ public interface EmployeeDB {
     List<Request> viewRequestCreatedByMe(String request_maker_name);
 
     boolean isDepartmentSupervisor(int employee_id);
+
+    boolean isDepartmentSupervisor(String supervisor);
+
+    List<Employee> findMembersFromDepartment(int employee_id, int department_id);
 
     String checkAccess(HttpSession session);
 }

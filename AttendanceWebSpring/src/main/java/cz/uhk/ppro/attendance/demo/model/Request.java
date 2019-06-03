@@ -33,6 +33,8 @@ public class Request {
 
     }
 
+    public Request() {}
+
     public Date getDate_of_creation() {
         return date_of_creation;
     }

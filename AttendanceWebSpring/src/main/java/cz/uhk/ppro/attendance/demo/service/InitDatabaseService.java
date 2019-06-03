@@ -39,11 +39,13 @@ public class InitDatabaseService {
         em.createQuery("DELETE FROM Employee").executeUpdate();
         departmentRepository.deleteAll();
 
-        Department department = new Department("Management");
-        departmentRepository.save(department);
+        Department department = new Department("Management",null);
+
 
         Employee employee = new Employee("Martin","Chaloupka", "",
                 "","test admin","admin", "admin", 0 );
+        department.setSupervisor(employee.getLogin_name());
+        departmentRepository.save(department);
         employee.setDepartment(department);
         employeeDB.createEmployee(employee);
     }
