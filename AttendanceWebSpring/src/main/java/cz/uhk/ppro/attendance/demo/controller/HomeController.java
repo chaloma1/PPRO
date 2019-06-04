@@ -62,6 +62,8 @@ public class HomeController {
         }else {
             Employee employee = employeeDB.findEmployeeByLogin(session.getAttribute("login").toString());
 
+            model.addAttribute("employee", employee);
+
             List<Attendance> attendances = attendanceRepository.findRecentAttendances(employee.getId_employee());
 
             System.out.println("employee ID" + "" +employee.getId_employee());

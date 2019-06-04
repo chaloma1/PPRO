@@ -43,7 +43,7 @@
 
 
     <div class="my-3 p-3 bg-white rounded shadow-sm">
-        <h6 class="border-bottom border-gray pb-2 mb-0">Dochazka uzivatele</h6>
+        <h6 class="border-bottom border-gray pb-2 mb-0">Tydenni dochazka uzivatele ${employee.first_name} ${employee.last_name}</h6>
         <table class="table">
             <thead class="thead-dark">
             <tr>

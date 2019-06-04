@@ -5,19 +5,32 @@
 
 
     <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+
+        <div class="nav-item active">
+            <a class="nav-link" style="color: white" href="./index">Home <span class="sr-only">(current)</span></a>
+        </div>
+
         <ul class="navbar-nav mr-auto">
             <%
                 if((int)session.getAttribute("access") <= 1)
                 {
             %>
-            <li class="nav-item active">
-                <a class="nav-link" href="./index">Home <span class="sr-only">(current)</span></a>
+
+
+            <li class="nav-link nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Request</a>
+                <div class="dropdown-menu" aria-labelledby="dropdown01">
+                    <a class="dropdown-item" href="#">Zobraz</a>
+                    <a class="dropdown-item" href="#">Pridej</a>
+                </div>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Notifications</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Requests</a>
+
+            <li class="nav-link nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Notification</a>
+                <div class="dropdown-menu" aria-labelledby="dropdown01">
+                    <a class="dropdown-item" href="#">Zobraz</a>
+                    <a class="dropdown-item" href="#">Pridej</a>
+                </div>
             </li>
 
 

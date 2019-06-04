@@ -148,7 +148,7 @@ public class EmployeeDao implements EmployeeDB
 
             System.out.println("SUPERVISOR KONTROLA" + "" + department.getTitle());
         }catch (Exception exception){
-            System.out.println("Chyba pri kontrole supervisora podle ID");
+            System.out.println("Chyba pri kontrole supervisora podle ID" + exception.getMessage());
             return false;
         }
 
@@ -169,7 +169,7 @@ public class EmployeeDao implements EmployeeDB
                     "SELECT d FROM Department d WHERE d.supervisor LIKE CONCAT('%',:login,'%') ").setParameter("login",e.getLogin_name()).getSingleResult();
 
         }catch (Exception e){
-            System.out.println("Chyba pri kontrole supervisora podle STRINGU");
+            System.out.println("Chyba pri kontrole supervisora podle STRINGU" + e.getMessage());
             return false;
         }
 
@@ -207,7 +207,6 @@ public class EmployeeDao implements EmployeeDB
 
     @Override
     public String checkAccess(HttpSession session) {
-            System.out.println("session +" + session.getAttribute("access"));
             if(session.getAttribute("access") != null){
                 String access_level;
                 switch ((int)session.getAttribute("access"))

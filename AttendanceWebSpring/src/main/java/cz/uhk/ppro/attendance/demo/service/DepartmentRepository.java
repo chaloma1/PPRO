@@ -19,7 +19,8 @@ public interface DepartmentRepository extends JpaRepository<Department, Integer>
 
     Department findBySupervisor(String supervisor);
 
-
+    @Query(value = "SELECT d FROM Department d WHERE d.title = :title")
+    List<Department> checkDepartmentTitle(@Param("title") String title);
 
     @Modifying
     @Query(value = "UPDATE Department d SET d.title = :newtitle, d.supervisor = :newsupervisor WHERE d.id_department = :id_department")

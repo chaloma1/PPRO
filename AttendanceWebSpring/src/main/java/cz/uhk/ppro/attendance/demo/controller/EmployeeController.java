@@ -311,8 +311,8 @@ public class EmployeeController {
                     return "redirect:./index";
                 }
 
-                if (title.isEmpty() == true || title == null){
-                    messages.addFlashAttribute("failuremessage", "Kolonka oddeleni by nemelo byt prazdne.");
+                if (title.isEmpty() == true || title == null || departmentRepository.checkDepartmentTitle(title.trim()).size() >= 1){
+                    messages.addFlashAttribute("failuremessage", "Kolonka oddeleni by nemelo byt prazdne nebo jiz pouzito v databazi.");
                     return "redirect:./index";
                 }
 
@@ -393,6 +393,11 @@ public class EmployeeController {
             try {
 
                 Department d = departmentRepository.findByTitle(oldTitle);
+
+                if (departmentRepository.checkDepartmentTitle(title.trim()).size() >= 1){
+                    messages.addFlashAttribute("failuremessage", "Nelze pridat oddeleni se stejnym nazvem jaky uz je v DB.");
+                    return "redirect:./index";
+                }
 
 
                 if (title != null && title.isEmpty() == false && !" ".equals(title)){
