@@ -51,5 +51,7 @@ public interface EmployeeDB {
 
     List<Employee> findMembersFromDepartment(int employee_id, int department_id);
 
+    boolean isValidUser(String login);
+
     String checkAccess(HttpSession session);
 }

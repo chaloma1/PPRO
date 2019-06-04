@@ -76,18 +76,34 @@
     </div>
 
     <div class="my-3 p-3 bg-white rounded shadow-sm">
-        <h6 class="border-bottom border-gray pb-2 mb-0">Uzivatele pod vedoucim oddeleni</h6>
-
+        <h6 class="border-bottom border-gray pb-2 mb-0">Uzivatele pod vedoucim z oddeleni</h6>
+        <c:choose>
+            <c:when test="${members != null && members.size() > 0}">
+                <c:forEach var="m" items="${members}">
         <div class="media text-muted pt-3">
             <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"/><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
             <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                <strong class="text-gray-dark">${m.first_name} ${m.last_name}</strong>
                 <div class="d-flex justify-content-between align-items-center w-100">
-                    <strong class="text-gray-dark">Full Name</strong>
-                    <a href="#">Follow</a>
+
+                    <p>
+                   <c:if test="${m.getAccess_level() == 0}"><strong>Role: Admin</strong></c:if>
+                    <c:if test="${m.getAccess_level() == 1}"><strong>Role: Employee</strong></c:if>
+                    </p>
+                    <p>
+                    ${m.getDepartment().getTitle()}:
+                    ${m.getPosition()}
+                    </p>
+                    <form method="GET", action="./provideDetailUser">
+                        <button name="userLogin" value="${m.getLogin_name()}" type="submit">Detail</button>
+                    </form>
                 </div>
-                <span class="d-block">@username</span>
+                <span class="d-block">${m.getLogin_name()}</span>
             </div>
         </div>
+                </c:forEach>
+            </c:when>
+        </c:choose>
 
         <small class="d-block text-right mt-3">
             <a href="#">All suggestions</a>

@@ -42,19 +42,19 @@ public class InitDatabaseService {
         Department department = new Department("Management",null);
 
 
-        Employee employee = new Employee("Martin","Chaloupka", "",
+        Employee admin = new Employee("Martin","Chaloupka", "",
                 "","test admin","admin", "admin", 0 );
-        department.setSupervisor(employee.getLogin_name());
+
+        Employee user = new Employee("David", "Kralik", "",
+                "", "test user", "user", "user", 1);
+        department.setSupervisor(admin.getLogin_name());
         departmentRepository.save(department);
-        employee.setDepartment(department);
-        employeeDB.createEmployee(employee);
+        admin.setDepartment(department);
+        user.setDepartment(department);
+
+        employeeDB.createEmployee(admin);
+        employeeDB.createEmployee(user);
     }
 
-    public void initEmployee() {
-        Employee employee = employeeDB.findEmployeeByName("Martin", "Chaloupka");
-        if(employee != null)
-        {
 
-        }
-    }
 }

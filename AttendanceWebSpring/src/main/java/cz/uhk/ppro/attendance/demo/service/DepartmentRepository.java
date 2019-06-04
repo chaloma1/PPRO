@@ -17,6 +17,8 @@ public interface DepartmentRepository extends JpaRepository<Department, Integer>
 
     Department findByTitle(String title);
 
+    Department findBySupervisor(String supervisor);
+
 
 
     @Modifying

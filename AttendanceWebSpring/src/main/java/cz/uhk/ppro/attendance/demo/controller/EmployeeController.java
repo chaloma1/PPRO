@@ -51,7 +51,7 @@ public class EmployeeController {
 
        }else if(access.equals("unknown")){
            return "redirect:./login";
-       }
+       }else { return "redirect:./login";}
 
         return "form/employeeForm";
 
@@ -103,7 +103,7 @@ public class EmployeeController {
 
             return "redirect:./login";
 
-        }
+        }else { return "redirect:./login";}
 
         return "redirect:./index";
 
@@ -113,8 +113,104 @@ public class EmployeeController {
 
     }
 
+    @RequestMapping(value = "/editUserAttendance", method = RequestMethod.GET)
+    public String editUserAttendance(@RequestParam int id_attendance, HttpSession session, Model model, RedirectAttributes messages){
+        String access = employeeDB.checkAccess(session);
+        if (access.equals("admin")) {
+
+            try {
+                Attendance a = attendanceRepository.getOne(id_attendance);
+                model.addAttribute("attendance", a);
+            }catch (Exception e){
+                messages.addFlashAttribute("failuremessage", "nepodarilo se nahrat dochazku k upraveni.");
+
+            }
 
 
+
+
+        } else if(access.equals("unknown")) {
+            return "redirect:./login";
+        }else { return "redirect:./login";}
+
+        return "form/alterAttendance";
+        //return "form/alterAttendanceForm";
+
+    }
+
+    @RequestMapping(value = "/alterAttendance", method = RequestMethod.POST)
+    public String alterAttendance(@RequestParam int id_attendance, @RequestParam String attend_time,
+                                  @RequestParam String leave_time, @RequestParam(required = false) Boolean toDelete,
+                                  HttpSession session, Model model, RedirectAttributes messages){
+        String access = employeeDB.checkAccess(session);
+        if (access.equals("admin")) {
+
+
+            if (toDelete != null && toDelete == true){
+                try{
+                    Attendance a = attendanceRepository.getOne(id_attendance);
+                    attendanceRepository.delete(a);
+                    messages.addFlashAttribute("successmessage", "Dochazka vymazana.");
+                    return "redirect:./index";
+
+                }catch (Exception e){
+                    messages.addFlashAttribute("failuremessage", "Dochazka nesla smazat.");
+                    return "redirect:./index";
+                }
+            }else {
+                try{
+
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+                    simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm");
+
+                    Date attend = simpleDateFormat.parse(attend_time);
+
+                    Date leave = simpleDateFormat.parse(leave_time);
+
+
+                    int milli_to_hour = 1000 * 60* 60;
+                    if ((int)(leave.getTime() - attend.getTime()) / milli_to_hour <= 0){
+                        messages.addFlashAttribute("failuremessage", "Nedostatecny nebo spatne upraveny cas dochazky.");
+
+                        try {
+                            Attendance a = attendanceRepository.getOne(id_attendance);
+                            model.addAttribute("attendance", a);
+                        }catch (Exception e){
+                            messages.addFlashAttribute("failuremessage", "Neco se pokazilo ve zpracovani formulare pro upravu dochazky" + e.getMessage());
+                            return "redirect:./index";
+                        }
+
+                        return "form/alterAttendance";
+
+
+                    }
+
+                    attendanceRepository.alterAttendance(id_attendance, attend, leave);
+
+                    messages.addFlashAttribute("successmessage", "Dochazka upravena");
+
+                }catch (Exception e){
+
+                    messages.addFlashAttribute("failuremessage", "Chyba v uprave dochazky." + e.getMessage());
+                    return "redirect:./index";
+
+                }
+
+                return "redirect:./index";
+            }
+
+
+
+
+
+        } else if(access.equals("unknown")) {
+            return "redirect:./login";
+        }else { return "redirect:./login";}
+
+        /* novy! return "redirect:./index"; */
+        //return "form/alterAttendanceForm";
+
+    }
 
 
     @RequestMapping(value = "/addAttendance", method = RequestMethod.GET)
@@ -132,7 +228,7 @@ public class EmployeeController {
 
             } else if(access.equals("unknown")) {
                 return "redirect:./login";
-            }
+            }else { return "redirect:./login";}
 
         return "form/attendanceForm";
 
@@ -173,7 +269,7 @@ public class EmployeeController {
 
         } else if (access.equals("unknown")){
             return "redirect:./login";
-        }
+        }else { return "redirect:./login";}
 
         return "redirect:./index";
 
@@ -194,7 +290,7 @@ public class EmployeeController {
 
         }else if (access.equals("unknown")){
             return "redirect:./login";
-        }
+        }else { return "redirect:./login";}
         return "form/departmentForm";
 
 
@@ -238,7 +334,7 @@ public class EmployeeController {
 
         }else if (access.equals("unknown")){
             return "redirect:./login";
-        }
+        }else { return "redirect:./login";}
         return "redirect:./index";
 
     }
@@ -257,7 +353,7 @@ public class EmployeeController {
 
         }else if (access.equals("unknown")){
             return "redirect:./login";
-        }
+        }else { return "redirect:./login";}
 
 
         return "form/departmentForm";
@@ -337,7 +433,7 @@ public class EmployeeController {
 
         }else if (access.equals("unknown")){
             return "redirect:./login";
-        }
+        }else { return "redirect:./login";}
 
 
 

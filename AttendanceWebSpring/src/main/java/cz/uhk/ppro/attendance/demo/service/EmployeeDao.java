@@ -140,10 +140,18 @@ public class EmployeeDao implements EmployeeDB
 
     @Override
     public boolean isDepartmentSupervisor(int employee_id) {
-        Employee e = findEmployeeById(employee_id);
-        Department department = (Department) em.createQuery("SELECT d FROM Department d WHERE d.supervisor LIKE CONCAT('%',:login,'%') ").setParameter("login",e.getLogin_name()).getSingleResult();
+        Department department;
+        try {
+            Employee e = findEmployeeById(employee_id);
+            department = (Department) em.createQuery(
+                    "SELECT d FROM Department d WHERE d.supervisor LIKE CONCAT('%',:login,'%') ").setParameter("login", e.getLogin_name()).getSingleResult();
 
-        System.out.println("SUPERVISOR KONTROLA" + "" + department.getTitle());
+            System.out.println("SUPERVISOR KONTROLA" + "" + department.getTitle());
+        }catch (Exception exception){
+            System.out.println("Chyba pri kontrole supervisora podle ID");
+            return false;
+        }
+
         if(department == null) {
             return false;
         }else {
@@ -153,8 +161,18 @@ public class EmployeeDao implements EmployeeDB
 
     @Override
     public boolean isDepartmentSupervisor(String supervisor) {
-        Employee e = findEmployeeByLogin(supervisor);
-        Department department = (Department) em.createQuery("SELECT d FROM Department d WHERE d.supervisor LIKE CONCAT('%',:login,'%') ").setParameter("login",e.getLogin_name()).getSingleResult();
+        Department department;
+        try{
+
+            Employee e = findEmployeeByLogin(supervisor);
+            department = (Department) em.createQuery(
+                    "SELECT d FROM Department d WHERE d.supervisor LIKE CONCAT('%',:login,'%') ").setParameter("login",e.getLogin_name()).getSingleResult();
+
+        }catch (Exception e){
+            System.out.println("Chyba pri kontrole supervisora podle STRINGU");
+            return false;
+        }
+
 
         System.out.println("SUPERVISOR KONTROLA" + "" + department.getTitle());
         if(department == null) {
@@ -167,13 +185,29 @@ public class EmployeeDao implements EmployeeDB
     @Override
     public List<Employee> findMembersFromDepartment(int employee_id, int department_id) {
         return em.createQuery(
-                "SELECT e.first_name, e.last_name, e.access_level, e.login_name " +
-                        "FROM Employee e WHERE e.department.id_department = :department_id AND id_employee != :employee_id")
+                "SELECT e FROM Employee e WHERE e.department.id_department = :department_id AND id_employee != :employee_id")
                 .setParameter("department_id", department_id).setParameter("employee_id", employee_id).getResultList();
     }
 
     @Override
+    public boolean isValidUser(String login) {
+        Employee e;
+        try{
+            e = findEmployeeByLogin(login);
+        }catch (Exception exception){
+            return false;
+        }
+
+        if(e == null) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    @Override
     public String checkAccess(HttpSession session) {
+            System.out.println("session +" + session.getAttribute("access"));
             if(session.getAttribute("access") != null){
                 String access_level;
                 switch ((int)session.getAttribute("access"))
