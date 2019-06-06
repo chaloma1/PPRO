@@ -4,9 +4,11 @@ package cz.uhk.ppro.attendance.demo.controller;
 import cz.uhk.ppro.attendance.demo.model.Attendance;
 import cz.uhk.ppro.attendance.demo.model.Department;
 import cz.uhk.ppro.attendance.demo.model.Employee;
+import cz.uhk.ppro.attendance.demo.model.Request;
 import cz.uhk.ppro.attendance.demo.service.AttendanceRepository;
 import cz.uhk.ppro.attendance.demo.service.DepartmentRepository;
 import cz.uhk.ppro.attendance.demo.service.EmployeeDB;
+import cz.uhk.ppro.attendance.demo.service.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +38,9 @@ public class EmployeeController {
 
     @Autowired
     AttendanceRepository attendanceRepository;
+
+    @Autowired
+    RequestRepository requestRepository;
 
     List<Employee> employees;
 
@@ -80,7 +85,7 @@ public class EmployeeController {
                 departmentRepository.save(d);
                 System.out.println("Dobre 1");
 
-                Employee e = new Employee(fname, lname, telephone, email, position, heslo, login, access_level);
+                Employee e = new Employee(fname, lname, telephone, email, position, employeeDB.hashPassword(heslo), login, access_level);
 
                 System.out.println("model employee");
 
@@ -444,6 +449,124 @@ public class EmployeeController {
 
 
         return "redirect:./index";
+    }
+
+    @RequestMapping(value = "/addRequest", method = RequestMethod.GET)
+    public String requestForm(HttpSession session, Model model){
+        String access = employeeDB.checkAccess(session);
+        if (access.equals("unknown")){
+            return "redirect:./login";
+        }else{
+            List<Employee> employees = employeeDB.findAllEmployee();
+
+            model.addAttribute("employees", employees);
+
+            return "form/requestForm";
+        }
+    }
+
+    @RequestMapping(value = "/sendRequest", method = RequestMethod.POST)
+    public String sendRequest(@RequestParam String header, @RequestParam String text,
+                              @RequestParam String employee, HttpSession session, RedirectAttributes messages){
+        String access = employeeDB.checkAccess(session);
+        if (access.equals("unknown")){
+            return "redirect:./login";
+        }else {
+            String employeeSubstring = null;
+            Employee e;
+            try{
+                employeeSubstring = employee.substring(employee.indexOf("(")+1, employee.indexOf(")"));
+
+                e = employeeDB.findEmployeeByLogin(employeeSubstring);
+
+            }catch (Exception exception){
+                messages.addFlashAttribute("failuremessage", "Parsovani stringu employee nebo vyhledani uzivatele v requestu se nezdaril." + exception.getMessage());
+                return "redirect:./index";
+            }
+
+
+            try{
+
+                Request r = new Request(e, session.getAttribute("login").toString(), header, text);
+                requestRepository.save(r);
+                messages.addFlashAttribute("successmessage", "Request uspesne ulozen v DB");
+
+
+            }catch (Exception exception){
+                messages.addFlashAttribute("failuremessage", "Pridani requestu se nepovedlo." + exception.getMessage());
+                return "redirect:./index";
+            }
+
+            return "redirect:./index";
+        }
+
+    }
+
+    @RequestMapping(value = "/viewRequests", method = RequestMethod.GET)
+    public String viewRequests(HttpSession session, Model model, RedirectAttributes messages){
+        System.out.println("viewReq tady to projde");
+        String access = employeeDB.checkAccess(session);
+        if (access.equals("unknown")){
+            return "redirect:./login";
+        }else{
+            try{
+
+                Employee employee = employeeDB.findEmployeeByLogin(session.getAttribute("login").toString());
+
+
+                List<Request> requests = requestRepository.findUserWeekRequests(employee.getId_employee());
+
+
+
+                List<Request> myRequests = requestRepository.findMyRequests(session.getAttribute("login").toString());
+
+
+                model.addAttribute("requests", requests);
+
+                model.addAttribute("myRequests", myRequests);
+
+                model.addAttribute("employee", employee);
+
+            }catch (Exception e){
+
+                messages.addFlashAttribute("failuremessage", "Requesty nebo uzivatel nesel nacist" + e.getMessage());
+                return "redirect:./index";
+            }
+            return "./requestList";
+        }
+
+    }
+
+    @RequestMapping(value = "/completeRequest", method = RequestMethod.POST)
+    public String completeRequest(@RequestParam int id_request, HttpSession session, RedirectAttributes messages){
+        System.out.println("id_requestu" + id_request);
+        String access = employeeDB.checkAccess(session);
+        if (access.equals("unknown")){
+            return "redirect:./login";
+        }else {
+            try{
+                Request r = requestRepository.getOne(id_request);
+
+                if (r.getDate_of_completion() == null && r.getRequested_employee().getLogin_name().equals(session.getAttribute("login").toString())){
+
+
+                    requestRepository.alterRequestCompleted(r.getId_request(), new Date());
+
+                    messages.addFlashAttribute("successmessage", "Request je splneny a upraven v DB");
+                    return "redirect:./viewRequests";
+                }else {
+                    messages.addFlashAttribute("failuremessage", "request je jiz splneny nebo neodpovida login");
+
+                    return "redirect:./viewRequests";
+                }
+
+            }catch (Exception exception){
+
+                messages.addFlashAttribute("failuremessage", "Chyba v uprave completed requestu" + " " + exception.getMessage());
+                return "redirect:./viewRequests";
+            }
+        }
+
     }
 
 

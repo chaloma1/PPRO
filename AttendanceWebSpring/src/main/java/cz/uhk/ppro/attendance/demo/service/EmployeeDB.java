@@ -51,6 +51,8 @@ public interface EmployeeDB {
 
     List<Employee> findMembersFromDepartment(int employee_id, int department_id);
 
+    String hashPassword(String heslo);
+
     boolean isValidUser(String login);
 
     String checkAccess(HttpSession session);

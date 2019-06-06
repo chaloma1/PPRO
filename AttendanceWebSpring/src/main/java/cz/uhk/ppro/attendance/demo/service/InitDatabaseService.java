@@ -43,10 +43,10 @@ public class InitDatabaseService {
 
 
         Employee admin = new Employee("Martin","Chaloupka", "",
-                "","test admin","admin", "admin", 0 );
+                "","test admin",employeeDB.hashPassword("admin"), "admin", 0 );
 
         Employee user = new Employee("David", "Kralik", "",
-                "", "test user", "user", "user", 1);
+                "", "test user", employeeDB.hashPassword("user"), "user", 1);
         department.setSupervisor(admin.getLogin_name());
         departmentRepository.save(department);
         admin.setDepartment(department);

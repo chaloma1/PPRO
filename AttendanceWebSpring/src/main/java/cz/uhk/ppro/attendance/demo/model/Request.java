@@ -19,21 +19,28 @@ public class Request {
 
     private Date date_of_creation;
 
-    private Boolean completed;
+    private Date date_of_completion;
 
-    public Request(/*Employee employee,*/ String request_maker_name, String header, String text) {
-        //this.requested_employee = employee;
+
+    public Request( Employee requested_employee, String request_maker_name, String header, String text) {
+        this.requested_employee = requested_employee;
         this.request_maker_name = request_maker_name;
         this.header = header;
         this.text = text;
-        completed = false;
-        date_of_creation = new Date(System.currentTimeMillis());
+        date_of_creation = new Date();
 
-        /* add Date of creation and completed*/
 
     }
 
     public Request() {}
+
+    public Date getDate_of_completion() {
+        return date_of_completion;
+    }
+
+    public void setDate_of_completion(Date date_of_completion) {
+        this.date_of_completion = date_of_completion;
+    }
 
     public Date getDate_of_creation() {
         return date_of_creation;
@@ -43,13 +50,6 @@ public class Request {
         this.date_of_creation = date_of_creation;
     }
 
-    public Boolean getCompleted() {
-        return completed;
-    }
-
-    public void setCompleted(Boolean completed) {
-        this.completed = completed;
-    }
 
     public Employee getRequested_employee() {
         return requested_employee;

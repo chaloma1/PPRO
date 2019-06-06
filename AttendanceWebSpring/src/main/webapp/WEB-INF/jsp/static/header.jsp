@@ -20,16 +20,8 @@
             <li class="nav-link nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Request</a>
                 <div class="dropdown-menu" aria-labelledby="dropdown01">
-                    <a class="dropdown-item" href="#">Zobraz</a>
-                    <a class="dropdown-item" href="#">Pridej</a>
-                </div>
-            </li>
-
-            <li class="nav-link nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Notification</a>
-                <div class="dropdown-menu" aria-labelledby="dropdown01">
-                    <a class="dropdown-item" href="#">Zobraz</a>
-                    <a class="dropdown-item" href="#">Pridej</a>
+                    <a class="dropdown-item" href="./viewRequests">Zobraz</a>
+                    <a class="dropdown-item" href="./addRequest">Pridej</a>
                 </div>
             </li>
 

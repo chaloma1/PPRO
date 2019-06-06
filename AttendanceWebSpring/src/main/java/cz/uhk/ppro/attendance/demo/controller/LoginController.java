@@ -31,8 +31,8 @@ public class LoginController {
     public String login(HttpSession session, @RequestParam String login_Name, @RequestParam String heslo, RedirectAttributes redirectAttributes) {
 
         System.out.println("Login" + login_Name);
-        System.out.println(("heslo" + heslo));
-        if(loginService.isLoggedIn(login_Name, heslo)) {
+        System.out.println(("heslo" + empDB.hashPassword(heslo)));
+        if(loginService.isLoggedIn(login_Name, empDB.hashPassword(heslo))) {
             System.out.println("JSEM LOGLEJ");
 
             Employee e = empDB.findEmployeeByLogin(login_Name);

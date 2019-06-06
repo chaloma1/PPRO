@@ -3,10 +3,16 @@ package cz.uhk.ppro.attendance.demo.service;
 import cz.uhk.ppro.attendance.demo.model.*;
 import org.springframework.stereotype.Repository;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
 
@@ -187,6 +193,31 @@ public class EmployeeDao implements EmployeeDB
         return em.createQuery(
                 "SELECT e FROM Employee e WHERE e.department.id_department = :department_id AND id_employee != :employee_id")
                 .setParameter("department_id", department_id).setParameter("employee_id", employee_id).getResultList();
+    }
+
+    @Override
+    public String hashPassword(String heslo) {
+        String hashedPassword = null;
+        try{
+
+
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+            md.update(heslo.getBytes());
+
+            StringBuffer result = new StringBuffer();
+            for (byte byt : md.digest()) result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
+
+
+            hashedPassword = result.toString();
+
+
+
+        }catch (Exception e){
+            System.out.println("heslo se nepovedlo zahashovat");
+            return heslo;
+        }
+        return hashedPassword;
     }
 
     @Override
