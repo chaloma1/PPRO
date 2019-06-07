@@ -24,20 +24,28 @@ public class InitDatabaseService {
 
     private AttendanceRepository attendanceRepository;
 
+    private RequestRepository requestRepository;
+
     public InitDatabaseService(@Autowired EmployeeDB employeeDB,
                                @Autowired DepartmentRepository departmentRepository,
-                               @Autowired AttendanceRepository attendanceRepository){
+                               @Autowired AttendanceRepository attendanceRepository,
+                               @Autowired RequestRepository requestRepository){
         this.employeeDB = employeeDB;
         this.departmentRepository = departmentRepository;
         this.attendanceRepository = attendanceRepository;
+        this.requestRepository = requestRepository;
     }
 
     public void initDB(){
 
+
+        requestRepository.deleteAll();
         attendanceRepository.deleteAll();
 
         em.createQuery("DELETE FROM Employee").executeUpdate();
         departmentRepository.deleteAll();
+
+
 
         Department department = new Department("Management",null);
 
